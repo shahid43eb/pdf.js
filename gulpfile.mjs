@@ -238,6 +238,12 @@ function createWebpackAlias(defines) {
     // Aliases defined here must also be replicated in the paths section of
     // the tsconfig.json file for the type generation to work.
     // In the tsconfig.json files, the .js extension must be omitted.
+    const gvAlias = {
+      "web-toolbar": "web/toolbar-geckoview.js",
+    };
+    for (const key in viewerAlias) {
+      viewerAlias[key] = gvAlias[key] || "web/stubs-geckoview.js";
+    }
     libraryAlias["display-cmap_reader_factory"] =
       "src/display/cmap_reader_factory.js";
     libraryAlias["display-standard_fontdata_factory"] =
@@ -577,7 +583,7 @@ function createWebBundle(defines, options) {
     }
   );
   return gulp
-    .src("./web/viewer.js", { encoding: false })
+    .src("./web/viewer-geckoview.js", { encoding: false })
     .pipe(webpack2Stream(viewerFileConfig));
 }
 
@@ -1081,7 +1087,7 @@ function buildGeneric(defines, dir) {
     createWasmBundle().pipe(gulp.dest(dir + "web/wasm")),
 
     preprocessHTML("web/viewer.html", defines).pipe(gulp.dest(dir + "web")),
-    preprocessCSS("web/viewer.css", defines)
+    preprocessCSS("web/viewer-geckoview.css", defines)
       .pipe(
         postcss([
           postcssDirPseudoClass(),
@@ -1418,7 +1424,7 @@ gulp.task(
           gulp.dest(MOZCENTRAL_CONTENT_DIR + "web")
         ),
 
-        preprocessCSS("web/viewer.css", defines)
+        preprocessCSS("web/viewer-geckoview.css", defines)
           .pipe(
             postcss([
               discardCommentsCSS(),
@@ -1519,7 +1525,7 @@ gulp.task(
         preprocessHTML("web/viewer.html", defines).pipe(
           gulp.dest(CHROME_BUILD_CONTENT_DIR + "web")
         ),
-        preprocessCSS("web/viewer.css", defines)
+        preprocessCSS("web/viewer-geckoview.css", defines)
           .pipe(
             postcss([
               postcssDirPseudoClass(),
@@ -2128,7 +2134,7 @@ gulp.task(
       console.log();
       console.log("### Starting local server");
 
-      let port = 8888;
+      let port = 3001;
       const i = process.argv.indexOf("--port");
       if (i >= 0 && i + 1 < process.argv.length) {
         const p = parseInt(process.argv[i + 1], 10);
@@ -2140,7 +2146,7 @@ gulp.task(
       }
 
       const { WebServer } = await import("./test/webserver.mjs");
-      const server = new WebServer({ port });
+      const server = new WebServer({host:"local.advanced-learning.sa", port });
       server.start();
     }
   )
