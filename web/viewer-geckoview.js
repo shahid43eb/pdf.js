@@ -40,12 +40,6 @@ function getViewerConfiguration() {
     appContainer: document.body,
     mainContainer,
     viewerContainer: document.getElementById("viewer"),
-    toolbar: {
-      mainContainer,
-      container: document.getElementById("floatingToolbar"),
-      download: document.getElementById("download"),
-    },
-
     passwordOverlay: {
       dialog: document.getElementById("passwordDialog"),
       label: document.getElementById("passwordText"),
